@@ -1,22 +1,27 @@
-const axios = require("axios");
+import axios from "axios";
 
-module.exports = async (req, res) => {
-  const moeda = req.query.moeda || "bitcoin";
+export default async function handler(req, res) {
+  const { moeda } = req.query;
+
+  if (!moeda) {
+    return res.status(400).json({ error: "Moeda não especificada" });
+  }
 
   try {
-    const resposta = await axios.get(
+    const response = await axios.get(
       `https://api.coingecko.com/api/v3/simple/price`,
       {
         params: {
           ids: moeda,
-          vs_currencies: "usd,brl",
-          include_24hr_change: "true",
-        },
+          vs_currencies: "brl",
+          include_24hr_change: "true"
+        }
       }
     );
 
-    res.status(200).json(resposta.data);
-  } catch (err) {
-    res.status(500).json({ erro: "Erro ao buscar preço da cripto." });
+    return res.status(200).json(response.data);
+  } catch (error) {
+    console.error("Erro ao buscar preço:", error);
+    return res.status(500).json({ error: "Erro ao buscar dados da CoinGecko" });
   }
-};
+}
