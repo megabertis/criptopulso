@@ -1,4 +1,4 @@
-const db = require("../firebase");
+const db = require("../../firebase");
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -12,13 +12,13 @@ export default async function handler(req, res) {
       await db.collection("alertas").add({
         moeda,
         variacao,
-        criadoEm: new Date(),
+        criadoEm: new Date()
       });
 
       return res.status(200).json({ status: "Alerta salvo com sucesso" });
     } catch (erro) {
-      console.error("Erro ao salvar alerta:", erro);
-      return res.status(500).json({ status: "Erro interno" });
+      console.error("Erro ao salvar:", erro);
+      return res.status(500).json({ status: "Erro ao salvar alerta" });
     }
   } else {
     return res.status(405).json({ status: "Método não permitido" });
