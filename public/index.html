@@ -73,34 +73,53 @@
     Feito com 💚 por Rodrigo & Copilot
   </footer>
 
-  <script>
-    async function buscarPreco(moeda, idPrefixo) {
+<script>
+  async function buscarPreco(moeda, idPrefixo) {
+    try {
       const res = await fetch(`/api/preco?moeda=${moeda}`);
+      if (!res.ok) throw new Error(`Erro ${res.status} ao buscar preço`);
+
       const dados = await res.json();
-      const preco = dados[moeda].brl.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+      const preco = dados[moeda].brl.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
       const variacao = dados[moeda].brl_24h_change.toFixed(2);
-      document.getElementById(idPrefixo + "-preco").textContent = preco;
-      document.getElementById(idPrefixo + "-variacao").textContent = `24h: ${variacao}%`;
+      document.getElementById(`${idPrefixo}-preco`).textContent = preco;
+      document.getElementById(`${idPrefixo}-variacao`).textContent = `24h: ${variacao}%`;
+    } catch (erro) {
+      console.error("Erro ao buscar preço:", erro);
+      document.getElementById(`${idPrefixo}-preco`).textContent = "Erro";
+      document.getElementById(`${idPrefixo}-variacao`).textContent = "--";
     }
+  }
 
-    buscarPreco("bitcoin", "btc");
-    buscarPreco("ethereum", "eth");
-    buscarPreco("solana", "sol");
+  buscarPreco("bitcoin", "btc");
+  buscarPreco("ethereum", "eth");
+  buscarPreco("solana", "sol");
 
-    document.getElementById("alerta-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const moeda = document.getElementById("moeda").value;
-      const variacao = parseFloat(document.getElementById("variacao").value);
+  document.getElementById("alerta-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const moeda = document.getElementById("moeda").value;
+    const variacao = parseFloat(document.getElementById("variacao").value);
 
+    try {
       const res = await fetch("/api/salvar-alerta", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ moeda, variacao })
       });
 
+      if (!res.ok) throw new Error(`Erro ${res.status} ao salvar`);
+
       const dados = await res.json();
-      document.getElementById("mensagem").textContent = dados.status || "Erro ao salvar.";
-    });
-  </script>
+      document.getElementById("mensagem").textContent = dados.status || "Salvo!";
+    } catch (erro) {
+      console.error("Erro ao salvar alerta:", erro);
+      document.getElementById("mensagem").textContent = "Erro ao salvar.";
+    }
+  });
+</script>
+
 </body>
 </html>
