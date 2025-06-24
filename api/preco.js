@@ -9,19 +9,19 @@ export default async function handler(req, res) {
 
   try {
     const response = await axios.get(
-      `https://api.coingecko.com/api/v3/simple/price`,
+      "https://api.coingecko.com/api/v3/simple/price",
       {
         params: {
           ids: moeda,
           vs_currencies: "brl",
-          include_24hr_change: "true"
-        }
+          include_24hr_change: "true",
+        },
       }
     );
 
     return res.status(200).json(response.data);
-  } catch (error) {
-    console.error("Erro ao buscar preço:", error);
-    return res.status(500).json({ error: "Erro ao buscar dados da CoinGecko" });
+  } catch (erro) {
+    console.error("Erro ao buscar dados da CoinGecko:", erro);
+    return res.status(500).json({ error: "Erro ao buscar dados" });
   }
 }
