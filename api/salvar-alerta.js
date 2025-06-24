@@ -12,12 +12,12 @@ export default async function handler(req, res) {
       await db.collection("alertas").add({
         moeda,
         variacao,
-        criadoEm: new Date()
+        criadoEm: new Date(),
       });
 
       return res.status(200).json({ status: "Alerta salvo com sucesso" });
-    } catch (error) {
-      console.error("Erro ao salvar alerta:", error);
+    } catch (erro) {
+      console.error("Erro ao salvar alerta:", erro);
       return res.status(500).json({ status: "Erro interno" });
     }
   } else {
